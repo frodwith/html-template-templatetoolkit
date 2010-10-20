@@ -109,7 +109,7 @@ sub translate {
     my $input = pop;
     my $soup  = $parser->template($input) or die 'Did not parse';
     my $root  = treeify($soup);
-    return process_body($root, '');
+    return process_body($root);
 }
 
 sub treeify {
@@ -155,7 +155,7 @@ sub treeify {
 }
 
 sub process_body {
-    my ($root, $context) = @_;
+    my $root = shift;
     my $output = '';
     foreach my $item (@$root) {
         unless (ref $item) {
@@ -180,22 +180,21 @@ sub process_body {
         }
         else {
             $name =~ s/\./_/g;
-            $name = $context . $name;
         }
 
         if ($t eq 'if' || $t eq 'unless') {
             my $tag = $t eq 'if' ? 'IF' : 'UNLESS';
             $output .= "[% $tag $name %]";
-            $output .= process_body($item->{body}, $context);
+            $output .= process_body($item->{body});
             if (my $else = $item->{else}) {
-                $output .= '[% ELSE %]' . process_body($else, $context);
+                $output .= '[% ELSE %]' . process_body($else);
             }
             $output .= '[% END %]'
         }
         elsif ($t eq 'loop') {
-            $output .= "[% FOREACH item IN $name %]";
-            $output .= process_body($item->{body}, 'item.');
-            $output .= '[% END %]';
+            $output .= "[% FOREACH item IN $name %][% FOREACH [item] %]";
+            $output .= process_body($item->{body});
+            $output .= '[% END;END %]';
         }
         elsif ($t eq 'var') {
             my %escape;
@@ -213,7 +212,7 @@ sub process_body {
             if ($escape{js}) {
                 $name = "($name"
                     . q|.replace('\\\\', '\\\\\\\\')|
-                    . q|.replace("'", '\\\\'')|
+                    . q|.replace("'", "\\\\'")|
                     . q|.replace('"', '\\\\"')|
                     . q|.replace('\\n', '\\\\n')|
                     . q|.replace('\\r', '\\\\r')|
