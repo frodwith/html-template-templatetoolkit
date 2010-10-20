@@ -192,7 +192,7 @@ sub process_body {
             $output .= '[% END %]'
         }
         elsif ($t eq 'loop') {
-            $output .= "[% FOREACH item IN $name %][% FOREACH [item] %]";
+            $output .= "[% FOREACH item IN $name; FOREACH [item] %]";
             $output .= process_body($item->{body});
             $output .= '[% END;END %]';
         }
