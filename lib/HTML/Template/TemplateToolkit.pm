@@ -86,13 +86,15 @@ my $grammar = <<'GRAMMAR';
     tmpl_else    : tag_open /tmpl_else/i              tag_close
         { {tag => 'else'} }
 
-    close_if     : tag_open /\/tmpl_if/i     tag_close
+    extra_close  : /[^->]*/
+
+    close_if     : tag_open /\/tmpl_if/i     extra_close tag_close
         { {close => 'if'} }
 
-    close_unless : tag_open /\/tmpl_unless/i tag_close
+    close_unless : tag_open /\/tmpl_unless/i extra_close tag_close
         { {close => 'unless'} }
 
-    close_loop   : tag_open /\/tmpl_loop/i   tag_close
+    close_loop   : tag_open /\/tmpl_loop/i   extra_close tag_close
         { {close => 'loop'} }
 
     tag          : tmpl_if  | tmpl_loop  | tmpl_unless | tmpl_var | tmpl_else
