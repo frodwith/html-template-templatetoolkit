@@ -58,7 +58,7 @@ RAW_HTML
 sub www_translate {
     my $self = shift;
     my $session = $self->session;
-    $session->http->setMimeType('text/plain');
+    $session->response->content_type('text/plain');
     try {
         HTML::Template::TemplateToolkit->translate($session->form->get('template'));
     }
