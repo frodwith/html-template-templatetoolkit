@@ -102,7 +102,7 @@ my $grammar = <<'GRAMMAR';
 
     tag_open     : /<!--\s+/ | '<'
 
-    tag_close    : /\s+-->/ | /\s*>/
+    tag_close    : /\s*-->/ | /\s*>/
 GRAMMAR
 
 my $parser = Parse::RecDescent->new($grammar) or die 'Bad grammar';
